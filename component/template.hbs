@@ -1,0 +1,198 @@
+{{#accordion-list showExpandAll=false as | al expandFn |}}
+  <div class="over-hr">
+    <span>
+      {{driverOptionsTitle}}
+    </span>
+  </div>
+
+  {{#accordion-list-item
+    title=(t "nodeDriver.oci.access.title")
+    detail=(t "nodeDriver.oci.access.detail")
+    expandAll=expandAll
+    expand=(action expandFn)
+    expandOnInit=true
+  }}
+    {{form-auth-cloud-credential
+      driverName=driverName
+      parseAndCollectErrors=(action "errorHandler")
+      primaryResource=primaryResource
+      cloudCredentials=cloudCredentials
+      finishAndSelectCloudCredential=(action "finishAndSelectCloudCredential")
+      progressStep=(action "finishAndSelectCloudCredential")
+      cancel=(action "cancel")
+      hideSave=true
+    }}
+
+  {{/accordion-list-item}}
+
+  {{#accordion-list-item
+     title=(t "nodeDriver.oci.placement.title")
+     detail=(t "nodeDriver.oci.placement.detail")
+     expandAll=expandAll
+     expand=(action expandFn)
+     expandOnInit=true
+  }}
+    <div class="row">
+
+      <div class="col span-6">
+        <label class="acc-label">{{t 'nodeDriver.oci.region.label'}}{{field-required}}</label>
+        {{#input-or-display value=selectedRegion}}
+        {{searchable-select class="form-control"
+                              content=regionChoices
+                              value=model.ociConfig.region
+          }}
+        {{/input-or-display}}
+      </div>
+
+      <div class="col span-6">
+        <label class="acc-label">{{t 'nodeDriver.oci.availabilityDomain.label'}}{{field-required}}</label>
+        {{#input-or-display value=selectedAd}}
+        {{searchable-select class="form-control"
+                              content=adChoices
+                              value=model.ociConfig.nodeAvailabilityDomain
+          }}
+        {{/input-or-display}}
+      </div>
+
+    </div>
+
+
+  {{/accordion-list-item}}
+
+  {{#accordion-list-item
+    title=(t "nodeDriver.oci.instance.title")
+    detail=(t "nodeDriver.oci.instance.detail")
+    expandAll=expandAll
+    expand=(action expandFn)
+    expandOnInit=true
+  }}
+    <div class="row">
+
+      <div class="col span-6">
+        <label class="acc-label">
+          {{t "nodeDriver.oci.nodeCompartment.label"}}
+          {{field-required}}
+        </label>
+        {{input
+          type="text"
+          value=model.ociConfig.nodeCompartmentId
+          classNames="form-control"
+          placeholder=(t "nodeDriver.oci.nodeCompartment.placeholder")
+        }}
+      </div>
+
+      <div class="col span-6">
+        <label class="acc-label">{{t 'nodeDriver.oci.image.label'}}{{field-required}}</label>
+        {{#input-or-display value=selectedImage}}
+        {{searchable-select class="form-control"
+                              content=imageChoices
+                              value=model.ociConfig.nodeImage
+          }}
+        {{/input-or-display}}
+      </div>
+      <div class="col span-6">
+        <label class="acc-label">{{t 'nodeDriver.oci.shape.label'}}{{field-required}}</label>
+        {{#input-or-display value=selectednodeShape}}
+        {{searchable-select class="form-control"
+                              content=nodeShapeChoices
+                              value=model.ociConfig.nodeShape
+          }}
+        {{/input-or-display}}
+      </div>
+    </div>
+
+
+  {{/accordion-list-item}}
+
+    {{#accordion-list-item
+    title=(t "nodeDriver.oci.network.title")
+    detail=(t "nodeDriver.oci.network.detail")
+    expandAll=expandAll
+    expand=(action expandFn)
+    expandOnInit=true
+  }}
+
+
+    <div class="row">
+      <div class="col span-6">
+        <label class="acc-label">
+          {{t "nodeDriver.oci.vcn.label"}}
+          {{field-required}}
+        </label>
+        {{input
+          type="text"
+          value=model.ociConfig.vcnId
+          classNames="form-control"
+          placeholder=(t "nodeDriver.oci.vcn.placeholder")
+        }}
+      </div>
+      <div class="col span-6">
+        <label class="acc-label">
+          {{t "nodeDriver.oci.vcnCompartment.label"}}
+        </label>
+        {{input
+          type="text"
+          value=model.ociConfig.vcnCompartmentId
+          classNames="form-control"
+          placeholder=(t "nodeDriver.oci.vcnCompartment.placeholder")
+        }}
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col span-6">
+        <label class="acc-label">
+          {{t "nodeDriver.oci.subnet.label"}}
+          {{field-required}}
+        </label>
+        {{input
+          type="text"
+          value=model.ociConfig.subnetId
+          classNames="form-control"
+          placeholder=(t "nodeDriver.oci.subnet.placeholder")
+        }}
+      </div>
+
+    </div>
+
+  {{/accordion-list-item}}
+
+
+  <div class="over-hr">
+    <span>
+      {{templateOptionsTitle}}
+    </span>
+  </div>
+
+  {{form-name-description
+    model=model
+    nameRequired=true
+    rowClass="row mb-10"
+  }}
+
+  {{form-user-labels
+    initialLabels=labelResource.labels
+    setLabels=(action "setLabels")
+    expand=(action expandFn)
+  }}
+
+  {{form-node-taints
+    model=model
+    expand=(action expandFn)
+  }}
+
+  {{form-engine-opts
+    machine=model
+    showEngineUrl=showEngineUrl
+  }}
+
+  {{top-errors
+    errors=errors
+  }}
+
+  {{save-cancel
+    save=(action "save")
+    cancel=(action "cancel")
+    editing=editing
+  }}
+{{/accordion-list}}
