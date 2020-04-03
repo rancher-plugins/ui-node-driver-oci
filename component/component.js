@@ -170,14 +170,14 @@ export default Ember.Component.extend(NodeDriver, {
         // 3 availability domains available
         if (region == "uk-london-1" || region == "us-ashburn-1" || region == "us-phoenix-1" || region == "eu-frankfurt-1") {
             values = {
-                "AD1": "jGnV:" + region.toUpperCase().replace('-1', '').replace('US-PHOENIX', 'PHX') + "-AD-1",
-                "AD2": "jGnV:" + region.toUpperCase().replace('-1', '').replace('US-PHOENIX', 'PHX') + "-AD-2",
-                "AD3": "jGnV:" + region.toUpperCase().replace('-1', '').replace('US-PHOENIX', 'PHX') + "-AD-3",
+                "AD1": region.toUpperCase().replace('-1', '').replace('US-PHOENIX', 'PHX') + "-AD-1",
+                "AD2": region.toUpperCase().replace('-1', '').replace('US-PHOENIX', 'PHX') + "-AD-2",
+                "AD3": region.toUpperCase().replace('-1', '').replace('US-PHOENIX', 'PHX') + "-AD-3",
             };
         } else {
             // 1 availability domain available
             values = {
-                "AD1": "jGnV:" + region.toUpperCase().replace('-1', '').replace('US-PHOENIX', 'PHX') + "-AD-1",
+                "AD1": region.toUpperCase().replace('-1', '').replace('US-PHOENIX', 'PHX') + "-AD-1",
             };
         }
 
