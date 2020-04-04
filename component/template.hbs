@@ -156,6 +156,18 @@
         </p>
       </div>
 
+      <div class="col span-6">
+        <label class="acc-label">
+          {{t "nodeDriver.azure.usePrivateIp.label"}}
+        </label>
+        <div>
+          {{input
+            type="checkbox"
+            checked=model.ociConfig.nodeUsePrivateIp
+          }}
+        </div>
+      </div>
+
     </div>
 
   {{/accordion-list-item}}
