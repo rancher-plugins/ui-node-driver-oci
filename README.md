@@ -12,7 +12,7 @@ If the OCI Node Driver is not inluded as a built-in driver:
   * Custom UI URL:
     `https://cdn.jsdelivr.net/gh/rancher-plugins/ui-node-driver-oci@v1.0.0/dist/component.js`
   * Whitelist Domains:
-    `jsdelivr.net`
+    `*.jsdelivr.net`
 
 * Wait for the driver to download and become "Active"
 * Click the user profile button in the upper right corner and add OCI Cloud Credentials
