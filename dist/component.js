@@ -104,6 +104,12 @@ define("nodes/components/driver-oci/component", ["exports", "shared/mixins/node-
       set(this, 'model.ociConfig', config);
     },
     validate: function validate() {
+      function getRegionIdent(ocid) {
+        var start = ocid.split(".", 3).join(".").length;
+        var end = ocid.split(".", 4).join(".").length;
+        return ocid.substring(start + 1, end);
+      }
+
       this._super();
 
       var errors = get(this, 'errors') || [];
@@ -134,6 +140,10 @@ define("nodes/components/driver-oci/component", ["exports", "shared/mixins/node-
 
       if (!this.get('model.ociConfig.vcnCompartmentId')) {
         set(this, 'model.ociConfig.vcnCompartmentId', get(this, 'model.ociConfig.nodeCompartmentId'));
+      } else {
+        if (!get(this, 'model.ociConfig.vcnCompartmentId').startsWith('ocid1.compartment')) {
+          errors.push('Specifying a valid oci VCN compartment is required');
+        }
       }
 
       if (!this.get('model.ociConfig.vcnId') || !get(this, 'model.ociConfig.vcnId').startsWith('ocid1.vcn')) {
@@ -142,6 +152,16 @@ define("nodes/components/driver-oci/component", ["exports", "shared/mixins/node-
 
       if (!this.get('model.ociConfig.subnetId') || !get(this, 'model.ociConfig.subnetId').startsWith('ocid1.subnet')) {
         errors.push('Specifying a valid oci subnet OCID is required');
+      }
+
+      if (this.get('model.ociConfig.region').includes('phoenix')) {
+        if (!this.get('model.ociConfig.subnetId').includes('phx') || !this.get('model.ociConfig.vcnId').includes('phx')) {
+          errors.push('The VCN and subnet must reside in the same region as the compute instance');
+        }
+      } else {
+        if (!this.get('model.ociConfig.region').includes(getRegionIdent(this.get('model.ociConfig.subnetId'))) || !this.get('model.ociConfig.region').includes(getRegionIdent(this.get('model.ociConfig.vcnId')))) {
+          errors.push('The VCN and subnet must reside in the same region as the compute instance');
+        }
       }
 
       if (get(errors, 'length')) {
@@ -173,13 +193,13 @@ define("nodes/components/driver-oci/component", ["exports", "shared/mixins/node-
 
       if (region == "uk-london-1" || region == "us-ashburn-1" || region == "us-phoenix-1" || region == "eu-frankfurt-1") {
         values = {
-          "AD1": region.toUpperCase().replace('-1', '').replace('US-PHOENIX', 'PHX') + "-AD-1",
-          "AD2": region.toUpperCase().replace('-1', '').replace('US-PHOENIX', 'PHX') + "-AD-2",
-          "AD3": region.toUpperCase().replace('-1', '').replace('US-PHOENIX', 'PHX') + "-AD-3"
+          "AD1": "AD-1",
+          "AD2": "AD-2",
+          "AD3": "AD-3"
         };
       } else {
         values = {
-          "AD1": region.toUpperCase().replace('-1', '').replace('US-PHOENIX', 'PHX') + "-AD-1"
+          "AD1": "AD-1"
         };
       }
 

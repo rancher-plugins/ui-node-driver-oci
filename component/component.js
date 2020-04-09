@@ -105,6 +105,13 @@ export default Ember.Component.extend(NodeDriver, {
 
     // Add custom validation beyond what can be done from the config API schema
     validate() {
+
+        function getRegionIdent(ocid) {
+            var start = ocid.split(".", 3).join(".").length
+            var end = ocid.split(".", 4).join(".").length
+            return ocid.substring(start + 1, end);
+        }
+
         // Get generic API validation errors
         this._super();
         var errors = get(this, 'errors') || [];
@@ -128,12 +135,27 @@ export default Ember.Component.extend(NodeDriver, {
         }
         if (!this.get('model.%%DRIVERNAME%%Config.vcnCompartmentId')) {
             set(this, 'model.%%DRIVERNAME%%Config.vcnCompartmentId', get(this, 'model.%%DRIVERNAME%%Config.nodeCompartmentId'));
+        } else {
+            if (!get(this, 'model.%%DRIVERNAME%%Config.vcnCompartmentId').startsWith('ocid1.compartment')) {
+                errors.push('Specifying a valid %%DRIVERNAME%% VCN compartment is required');
+            }
         }
         if (!this.get('model.%%DRIVERNAME%%Config.vcnId') || !get(this, 'model.%%DRIVERNAME%%Config.vcnId').startsWith('ocid1.vcn')) {
             errors.push('Specifying a valid %%DRIVERNAME%% VCN OCID is required');
         }
         if (!this.get('model.%%DRIVERNAME%%Config.subnetId') || !get(this, 'model.%%DRIVERNAME%%Config.subnetId').startsWith('ocid1.subnet')) {
             errors.push('Specifying a valid %%DRIVERNAME%% subnet OCID is required');
+        }
+        // phoenix has a different region indentifier
+        if (this.get('model.%%DRIVERNAME%%Config.region').includes('phoenix')) {
+            if (! this.get('model.%%DRIVERNAME%%Config.subnetId').includes('phx') || ! this.get('model.%%DRIVERNAME%%Config.vcnId').includes('phx')) {
+                errors.push('The VCN and subnet must reside in the same region as the compute instance');
+            }
+        } else {
+            if (!this.get('model.%%DRIVERNAME%%Config.region').includes(getRegionIdent(this.get('model.%%DRIVERNAME%%Config.subnetId'))) || 
+            !this.get('model.%%DRIVERNAME%%Config.region').includes(getRegionIdent(this.get('model.%%DRIVERNAME%%Config.vcnId')))) {
+                errors.push('The VCN and subnet must reside in the same region as the compute instance');
+            }
         }
 
         // Set the array of errors for display,
@@ -170,14 +192,14 @@ export default Ember.Component.extend(NodeDriver, {
         // 3 availability domains available
         if (region == "uk-london-1" || region == "us-ashburn-1" || region == "us-phoenix-1" || region == "eu-frankfurt-1") {
             values = {
-                "AD1": region.toUpperCase().replace('-1', '').replace('US-PHOENIX', 'PHX') + "-AD-1",
-                "AD2": region.toUpperCase().replace('-1', '').replace('US-PHOENIX', 'PHX') + "-AD-2",
-                "AD3": region.toUpperCase().replace('-1', '').replace('US-PHOENIX', 'PHX') + "-AD-3",
+                "AD1": "AD-1",
+                "AD2": "AD-2",
+                "AD3": "AD-3",
             };
         } else {
             // 1 availability domain available
             values = {
-                "AD1": region.toUpperCase().replace('-1', '').replace('US-PHOENIX', 'PHX') + "-AD-1",
+                "AD1": "AD-1",
             };
         }
 
